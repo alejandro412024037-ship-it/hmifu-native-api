@@ -68,6 +68,13 @@ class User {
             return true;
         }
         return false;
+    }// 3. Fungsi untuk Menampilkan Semua Data Mahasiswa
+    public function read() {
+        // Ambil semua data kecuali password (demi keamanan)
+        $query = "SELECT id, name, nim, email, role FROM " . $this->table_name . " ORDER BY id DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
     }
 }
 ?>
