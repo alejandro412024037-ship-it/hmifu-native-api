@@ -28,13 +28,12 @@ class UserController {
 
             http_response_code(200);
             echo json_encode([
-                "success" => true,
-                "message" => "Berhasil mengambil $jumlah_data data mahasiswa.",
+                "status" => "success",
                 "data" => $users_arr
             ]);
         } else {
             http_response_code(404);
-            echo json_encode(["success" => false, "message" => "Belum ada data mahasiswa ditemukan."]);
+            echo json_encode(["status" => "error", "message" => "Belum ada data mahasiswa ditemukan."]);
         }
     }
 }
