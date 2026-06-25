@@ -1,24 +1,24 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-// Izinkan metode POST (Register) dan GET (Read Semua User)
-header("Access-Control-Allow-Methods: POST, GET"); 
+header("Access-Control-Allow-Methods: POST, GET");
 
+require_once '../config/database.php';
+require_once '../config/auth.php';
 require_once '../controllers/AuthController.php';
 require_once '../controllers/UserController.php';
 
-$auth = new AuthController();
-$userCtrl = new UserController();
-
-// Cek metode apa yang digunakan oleh Thunder Client
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Jika POST, jalankan fitur Register
+    // Register tidak butuh token
+    $auth = new AuthController();
     $auth->register();
 } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    // Jika GET, tampilkan daftar semua mahasiswa
+    // Hanya admin yang boleh melihat semua user
+    validateToken($koneksi_alejandrojulian);
+    $userCtrl = new UserController();
     $userCtrl->getAllUsers();
 } else {
     http_response_code(405);
-    echo json_encode(["success" => false, "message" => "Metode tidak diizinkan. Gunakan POST atau GET."]);
+    echo json_encode(["status" => "error", "message" => "Metode tidak diizinkan. Gunakan POST atau GET."]);
 }
 ?>

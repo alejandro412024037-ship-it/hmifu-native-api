@@ -1,9 +1,9 @@
 <?php
 
-$host_alejandrojulian = "localhost";
+$host_alejandrojulian = "127.0.0.1:3307";
 $user_alejandrojulian = "root";
 $pass_alejandrojulian = "";
-$db_alejandrojulian   = "hmifu_mobile_db"; // Sesuaikan dengan nama database Anda di phpMyAdmin
+$db_alejandrojulian   = "hmif_ukrida_db"; // Sesuaikan dengan nama database Anda di phpMyAdmin
 
 try {
     $koneksi_alejandrojulian = new PDO("mysql:host=$host_alejandrojulian;dbname=$db_alejandrojulian", $user_alejandrojulian, $pass_alejandrojulian);

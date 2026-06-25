@@ -1,16 +1,16 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: GET");
 
 require_once '../config/database.php';
 require_once '../config/auth.php';
-require_once '../controllers/EventController.php';
+require_once '../controllers/EventRegistrationController.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $user_id = validateToken($koneksi_alejandrojulian);
 
-    // Periksa apakah user adalah admin
+    // Hanya admin yang bisa melihat daftar peserta
     $query = "SELECT role FROM users WHERE id = ? LIMIT 1";
     $stmt  = $koneksi_alejandrojulian->prepare($query);
     $stmt->bindParam(1, $user_id);
@@ -23,10 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    $eventCtrl = new EventController();
-    $eventCtrl->deleteEvent($user_id);
+    $ctrl = new EventRegistrationController();
+    $ctrl->getRegistrants();
 } else {
     http_response_code(405);
-    echo json_encode(["status" => "error", "message" => "Metode tidak diizinkan. Gunakan POST."]);
+    echo json_encode(["status" => "error", "message" => "Metode tidak diizinkan. Gunakan GET."]);
 }
 ?>
