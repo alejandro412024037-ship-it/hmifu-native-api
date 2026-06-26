@@ -1,5 +1,7 @@
 <?php
 class EventController {
+    
+    // 1. Fungsi untuk menghapus event (Dengan Keamanan RBAC)
     public function deleteEvent() {
         require '../config/database.php';
         require_once '../models/Event.php';
@@ -44,5 +46,40 @@ class EventController {
             echo json_encode(["success" => false, "message" => "Data tidak lengkap (butuh event_id dan user_id)."]);
         }
     }
-}
+
+    // 2. Fungsi untuk menampilkan histori event
+    public function history() {
+        require '../config/database.php';
+        require_once '../models/Event.php';
+
+        $event = new Event($koneksi_alejandrojulian);
+        $stmt = $event->getHistory();
+        $jumlah_data = $stmt->rowCount();
+
+        if ($jumlah_data > 0) {
+            $events_arr = array();
+            
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $event_item = array(
+                    "id" => $row['id'],
+                    "title" => $row['title'],
+                    "description" => $row['description'],
+                    "event_date" => $row['event_date'],
+                    "location" => $row['location']
+                );
+                array_push($events_arr, $event_item);
+            }
+
+            http_response_code(200);
+            echo json_encode([
+                "success" => true, 
+                "message" => "Berhasil mengambil data histori acara.",
+                "data" => $events_arr
+            ]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["success" => false, "message" => "Belum ada histori acara yang selesai."]);
+        }
+    }
+} // <--- Tanda penutup class-nya yang benar diletakkan di paling bawah ini
 ?>

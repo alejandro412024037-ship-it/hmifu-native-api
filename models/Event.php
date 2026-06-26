@@ -22,5 +22,15 @@ class Event {
         }
         return false;
     }
+    // Fungsi untuk mengambil histori acara (acara yang sudah lewat)
+    public function getHistory() {
+        // Logika: Ambil event dimana event_date lebih kecil (<) dari waktu sekarang (NOW)
+        $query = "SELECT id, title, description, event_date, location FROM " . $this->table_name . " WHERE event_date < NOW() ORDER BY event_date DESC";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        
+        return $stmt;
+    }
 }
 ?>
