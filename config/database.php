@@ -11,7 +11,10 @@ try {
     $koneksi_alejandrojulian->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     // echo "Koneksi ke database sukses!"; // Buka komentar ini jika ingin tes koneksi
 } catch(PDOException $e) {
-    echo "Koneksi gagal: " . $e->getMessage();
+    error_log("Database connection failed: " . $e->getMessage());
+    http_response_code(503);
+    echo json_encode(["status" => "error", "message" => "Layanan tidak tersedia. Coba lagi nanti."]);
+    exit();
 }
 
 ?>

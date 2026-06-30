@@ -30,9 +30,6 @@ class Announcement {
                   VALUES (:title, :content, :created_by)";
         $stmt = $this->conn->prepare($query);
 
-        $this->title   = htmlspecialchars(strip_tags($this->title));
-        $this->content = htmlspecialchars(strip_tags($this->content));
-
         $stmt->bindParam(':title',      $this->title);
         $stmt->bindParam(':content',    $this->content);
         $stmt->bindParam(':created_by', $this->created_by);

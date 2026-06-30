@@ -8,15 +8,15 @@ class Event {
     public $description;
     public $location;
     public $event_date;
-    public $created_by;
     public $created_at;
+    public $created_by;
     public $updated_at;
 
     public function __construct($db) {
         $this->conn = $db;
     }
 
-    // Ambil semua event
+    // Ambil semua event (upcoming & past)
     public function read() {
         $query = "SELECT id, title, description, location, event_date, created_by, created_at, updated_at
                   FROM " . $this->table_name . "
@@ -50,6 +50,27 @@ class Event {
         return false;
     }
 
+    // Ambil histori event (acara yang sudah lewat)
+    public function getHistory() {
+        $query = "SELECT id, title, description, event_date, location
+                  FROM " . $this->table_name . "
+                  WHERE event_date < NOW()
+                  ORDER BY event_date DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    // Ambil semua event (diurutkan dari terbaru)
+    public function getAllEvents() {
+        $query = "SELECT id, title, description, event_date, location
+                  FROM " . $this->table_name . "
+                  ORDER BY event_date DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
     // Buat event baru (admin only)
     public function create() {
         $query = "INSERT INTO " . $this->table_name . "
@@ -57,11 +78,6 @@ class Event {
                   VALUES (:title, :description, :location, :event_date, :created_by)";
 
         $stmt = $this->conn->prepare($query);
-
-        $this->title       = htmlspecialchars(strip_tags($this->title));
-        $this->description = htmlspecialchars(strip_tags($this->description));
-        $this->location    = htmlspecialchars(strip_tags($this->location));
-        $this->event_date  = htmlspecialchars(strip_tags($this->event_date));
 
         $stmt->bindParam(':title',       $this->title);
         $stmt->bindParam(':description', $this->description);
@@ -76,7 +92,6 @@ class Event {
     public function delete() {
         $query = "DELETE FROM " . $this->table_name . " WHERE id = ?";
         $stmt = $this->conn->prepare($query);
-        $this->id = htmlspecialchars(strip_tags($this->id));
         $stmt->bindParam(1, $this->id);
         return $stmt->execute();
     }

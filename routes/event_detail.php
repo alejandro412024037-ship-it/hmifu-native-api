@@ -8,9 +8,10 @@ require_once '../config/auth.php';
 require_once '../controllers/EventController.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    validateToken($koneksi_alejandrojulian);
+    requireAuth($koneksi_alejandrojulian);
     $eventCtrl = new EventController();
     $eventCtrl->getEvent();
+
 } else {
     http_response_code(405);
     echo json_encode(["status" => "error", "message" => "Metode tidak diizinkan. Gunakan GET."]);

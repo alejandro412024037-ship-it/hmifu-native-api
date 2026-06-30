@@ -51,13 +51,13 @@ class AuthController {
 
             if ($email_ada && password_verify($data->password, $user->password)) {
 
-                // Generate token dan simpan ke tabel personal_access_tokens
-                $token = bin2hex(random_bytes(32));
+                $token  = bin2hex(random_bytes(32));
+                $hashed = hash('sha256', $token);
                 $stmt = $koneksi_alejandrojulian->prepare(
                     "INSERT INTO personal_access_tokens (user_id, token) VALUES (?, ?)"
                 );
                 $stmt->bindParam(1, $user->id);
-                $stmt->bindParam(2, $token);
+                $stmt->bindParam(2, $hashed);
                 $stmt->execute();
 
                 http_response_code(200);
@@ -95,7 +95,7 @@ class AuthController {
             return;
         }
 
-        $token = substr($authHeader, 7);
+        $token = hash('sha256', substr($authHeader, 7));
 
         $stmt = $koneksi_alejandrojulian->prepare(
             "DELETE FROM personal_access_tokens WHERE token = ?"

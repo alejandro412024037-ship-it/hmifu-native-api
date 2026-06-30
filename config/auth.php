@@ -1,10 +1,6 @@
 <?php
 
-/**
- * Validates the Bearer token from the Authorization header.
- * Returns the authenticated user_id on success, or sends a 401 response and exits.
- */
-function validateToken($conn) {
+function requireAuth($conn) {
     $headers = getallheaders();
     $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
 
@@ -14,9 +10,12 @@ function validateToken($conn) {
         exit();
     }
 
-    $token = substr($authHeader, 7);
+    $token = hash('sha256', substr($authHeader, 7));
 
-    $query = "SELECT user_id FROM personal_access_tokens WHERE token = ? LIMIT 1";
+    $query = "SELECT u.id, u.name, u.role
+              FROM personal_access_tokens t
+              JOIN users u ON t.user_id = u.id
+              WHERE t.token = ? LIMIT 1";
     $stmt = $conn->prepare($query);
     $stmt->bindParam(1, $token);
     $stmt->execute();
@@ -27,7 +26,16 @@ function validateToken($conn) {
         exit();
     }
 
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $row['user_id'];
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function requireAdmin($conn) {
+    $user = requireAuth($conn);
+    if ($user['role'] !== 'admin') {
+        http_response_code(403);
+        echo json_encode(["status" => "error", "message" => "Akses ditolak: Anda bukan Admin."]);
+        exit();
+    }
+    return $user;
 }
 ?>

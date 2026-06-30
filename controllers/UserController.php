@@ -21,7 +21,8 @@ class UserController {
                     "name" => $row['name'],
                     "nim" => $row['nim'],
                     "email" => $row['email'],
-                    "role" => $row['role']
+                    "role" => $row['role'], // <--- Koma sudah ditambahkan di sini
+                    "status" => $row['status'] // <--- Diubah menjadi 'status' sesuai database
                 );
                 array_push($users_arr, $user_item);
             }

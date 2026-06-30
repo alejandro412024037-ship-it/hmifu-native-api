@@ -9,14 +9,14 @@ require_once '../controllers/AuthController.php';
 require_once '../controllers/UserController.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Register tidak butuh token
     $auth = new AuthController();
     $auth->register();
+
 } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    // Hanya admin yang boleh melihat semua user
-    validateToken($koneksi_alejandrojulian);
+    requireAdmin($koneksi_alejandrojulian);
     $userCtrl = new UserController();
     $userCtrl->getAllUsers();
+
 } else {
     http_response_code(405);
     echo json_encode(["status" => "error", "message" => "Metode tidak diizinkan. Gunakan POST atau GET."]);
