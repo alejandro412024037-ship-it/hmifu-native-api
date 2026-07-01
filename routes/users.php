@@ -1,21 +1,20 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-// Izinkan metode POST (Register) dan GET (Read Semua User)
 header("Access-Control-Allow-Methods: POST, GET"); 
 
 require_once '../controllers/AuthController.php';
 require_once '../controllers/UserController.php';
 
-$auth = new AuthController();
-$userCtrl = new UserController();
+$method = $_SERVER['REQUEST_METHOD'];
 
-// Cek metode apa yang digunakan oleh Thunder Client
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Jika POST, jalankan fitur Register
+if ($method === 'POST') {
+    // Arahkan ke fitur Registrasi di AuthController
+    $auth = new AuthController();
     $auth->register();
-} else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    // Jika GET, tampilkan daftar semua mahasiswa
+} elseif ($method === 'GET') {
+    // Arahkan ke fitur Lihat Semua Mahasiswa di UserController
+    $userCtrl = new UserController();
     $userCtrl->getAllUsers();
 } else {
     http_response_code(405);

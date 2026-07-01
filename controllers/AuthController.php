@@ -16,6 +16,16 @@ class AuthController {
         // Memastikan data yang dikirim tidak kosong
         if (!empty($data->name) && !empty($data->nim) && !empty($data->email) && !empty($data->password)) {
             
+            // 🛡️ PINTU KEAMANAN DOMAIN KAMPUS (Untuk Register)
+            if (!str_ends_with($data->email, '@civitas.ukrida.ac.id')) {
+                http_response_code(403);
+                echo json_encode([
+                    "success" => false, 
+                    "message" => "Pendaftaran Ditolak: Wajib menggunakan email kampus (@civitas.ukrida.ac.id)"
+                ]);
+                return; // Hentikan eksekusi
+            }
+
             // Masukkan data JSON ke dalam properti objek Model User
             $user->name = $data->name;
             $user->nim = $data->nim;
@@ -51,9 +61,20 @@ class AuthController {
 
         $user = new User($koneksi_alejandrojulian);
         $data = json_decode(file_get_contents("php://input"));
-
+        
+        // Pengecekan apakah input kosong harus dilakukan lebih dulu
         if (!empty($data->email) && !empty($data->password)) {
             
+            // 🛡️ PINTU KEAMANAN DOMAIN KAMPUS (Untuk Login)
+            if (!str_ends_with($data->email, '@civitas.ukrida.ac.id')) {
+                http_response_code(403);
+                echo json_encode([
+                    "success" => false, 
+                    "message" => "Login Ditolak: Akses hanya untuk email civitas Ukrida (@civitas.ukrida.ac.id)"
+                ]);
+                return; // Hentikan proses
+            }
+
             $user->email = $data->email;
             // Cek ke database apakah email ini ada?
             $email_ada = $user->emailExists();
@@ -66,11 +87,12 @@ class AuthController {
                     "success" => true,
                     "message" => "Login Berhasil!",
                     "data" => [
-                        "id"    => $user->id,
-                        "name"  => $user->name,
-                        "nim"   => $user->nim,
-                        "email" => $user->email,
-                        "role"  => $user->role  // <--- Data role sekarang sudah masuk ke dalam fungsi login dengan aman
+                        "id"     => $user->id,
+                        "name"   => $user->name,
+                        "nim"    => $user->nim,
+                        "email"  => $user->email,
+                        "role"   => $user->role,
+                        "status" => $user->status // <--- Kolom status juga ikut dikirimkan
                     ]
                 ]);
             } else {
